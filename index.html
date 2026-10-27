@@ -1162,6 +1162,8 @@ const all=()=>{walk(document.documentElement);attrs(document.documentElement)};d
         .gs-ico:hover{background:linear-gradient(135deg,#1d4ed8,#3b82f6);color:#fff;transform:translateY(-1px);box-shadow:0 10px 20px -10px rgba(37,99,235,.8)}
         .gs-float{display:none}
 .firebase-mode-indicator:not([data-mode="live"]){display:none!important}
+.firebase-mode-indicator[data-mode="live"]{font-size:0!important;gap:0!important;letter-spacing:0!important;width:34px!important;height:16px!important;padding:0!important;justify-content:center!important;background:#16a34a!important;border:0!important;box-shadow:0 0 10px rgba(22,163,74,.6)}
+.firebase-mode-indicator[data-mode="live"]::before{background:#fff!important;box-shadow:none!important}
 @media (min-width:1024px){.top-bar .gs-ico{display:none!important}}
         @media (min-width:1024px){.gs-float{display:inline-flex;position:fixed;top:12px;right:16px;z-index:100}}
         .gs-desk{display:none}

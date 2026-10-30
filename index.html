@@ -8417,5 +8417,47 @@ const css=document.createElement('style');css.id='upload-gate-css';css.textConte
 const sync=()=>{document.body.classList.toggle('no-upload',!can())};sync();setInterval(sync,2000);
 })();
 </script>
+<script>
+/* Role-restricted views: Admin = all; HR = HR set; other management staff = staff set */
+(function(){
+  var HRSET=['attendance','growth','onboarding','applications','fleet','availability','connect','ai','itreq'];
+  var STAFFSET=['omhub','dashboard','history','help','intel','performance','fleet','availability','ai','connect'];
+  function allowed(){
+    try{
+      var u=state.user; if(!u)return null;
+      var em=(fb.auth&&fb.auth.currentUser&&fb.auth.currentUser.email)||'';
+      if(HR.isAdmin(u.name,em))return null;
+      if(u.hr===true||/\bhr\b|human resources/i.test(u.role||''))return HRSET;
+      if(state.role==='management')return STAFFSET;
+      return null;
+    }catch(e){return null}
+  }
+  function apply(){
+    var A=allowed(); if(!A)return;
+    var hr=A===HRSET;
+    document.querySelectorAll('#sidebar .nav-item[data-tab]').forEach(function(n){
+      n.style.setProperty('display',A.indexOf(n.getAttribute('data-tab'))>-1?'':'none','important');
+    });
+    if(hr){
+      document.querySelectorAll('#sidebar .hr-only').forEach(function(e){e.classList.remove('hidden')});
+      document.querySelectorAll('#sidebar [data-tab="itreq"] span').forEach(function(x){if(x.textContent.trim()!=='IT Support')x.textContent='IT Support'});
+    }else{
+      document.querySelectorAll('#sidebar .hr-only').forEach(function(e){e.classList.add('hidden')});
+    }
+    var sm=document.getElementById('shiftMini'); if(sm)sm.style.setProperty('display','none','important');
+    var act=document.querySelector('.tab-pane.active');
+    if(act&&A.indexOf(act.id)<0)showTab(A[0]);
+  }
+  var _show=showTab;
+  showTab=function(id){
+    var A=allowed(); if(A&&A.indexOf(id)<0)id=A[0];
+    _show(id); apply();
+  };
+  var _sr=switchRole;
+  switchRole=function(){_sr.apply(this,arguments);apply();var A=allowed();if(A)showTab(A===HRSET?'attendance':'omhub')};
+  new MutationObserver(apply).observe(document.getElementById('sidebar'),{childList:true,subtree:true});
+  setInterval(apply,1000);
+})();
+</script>
 </body>
 </html>
